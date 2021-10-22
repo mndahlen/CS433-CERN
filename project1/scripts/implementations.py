@@ -1,5 +1,7 @@
+import numpy as np
+
 # Mandatory functions
-def least_squares_GD(y, tx, initial w, max_iters, gamma):
+def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     """Gradient descent algorithm."""
     # Define parameters to store w and loss
     ws = [initial_w]
@@ -20,7 +22,7 @@ def least_squares_GD(y, tx, initial w, max_iters, gamma):
 
     return (w, loss)
 
-def least_squares_SGD(y, tx, initial w, max_iters, gamma):
+def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
     """Stochastic gradient descent algorithm."""
     ws = [initial_w]
     losses = []
@@ -52,12 +54,35 @@ def ridge_regression(y, tx, lambda_):
     loss = compute_rmse(y,tx,w)
     return (w, loss)
 
-def logistic_regression(y, tx, initial w, max_iters, gamma):
-    raise NotImplementedError 
+def logistic_regression(y, tx, initial_w, max_iters, gamma):
+    threshold = 1e-8
+    losses = []
+    for iter in range(max_iter):
+        # get loss and update w.
+        loss, w = logistic_gradient_descent(y, tx, w, gamma)
+        if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < threshold:
+            break
+    return (w, loss)
 
 
-def reg_logistic_regression(y, tx, lambda_, initial w, max_iters, gamma):
-    raise NotImplementedError
+def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
+    # init parameters
+    #max_iter = 10000
+    #gamma = 0.01
+    #lambda_ = 0.1
+    threshold = 1e-8
+    losses = []
+
+    # start the logistic regression
+    for iter in range(max_iter):
+        # get loss and update w.
+        loss, w = penalized_logistic_gradient_descent(y, tx, w, gamma, lambda_)
+        # converge criterion
+        losses.append(loss)
+        if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < threshold:
+            break
+            
+    return (w, loss)
 
 
 
@@ -71,7 +96,7 @@ def compute_gradient(y, tx, w):
 
 def build_poly_1D(x, degree):
     """polynomial basis functions for input data x, for j=0 up to j=degree."""
-    poly = np.c_[np.ones(x.shape),x]
+    poly = np.c_[np.ones(x.shape[0]),x]
     for d in range(2,degree + 1):
         poly = np.c_[poly, np.power(x,d)]
     return poly
@@ -124,6 +149,56 @@ def compute_mae(y,tx,w):
     N = len(y)
     loss = np.sum(np.absolute(error))/N
     return loss
+
+# For logistic regression
+def sigmoid(t):
+    """apply the sigmoid function on t."""
+    sig = np.power((np.ones(t.shape) + np.exp(-t)),-1)
+    return sig
+
+def calculate_logistic_loss(y, tx, w):
+    """compute the loss: negative log likelihood."""
+    sig = sigmoid(tx@w)
+    loss = np.transpose(y)@np.log(sig) + np.transpose(np.ones(y.shape) - y)@np.log(np.ones(sig.shape) - sig)
+    
+    return -loss
+
+def calculate_logistic_gradient(y, tx, w):
+    """compute the gradient of loss."""
+    common_sigmoid = sigmoid(tx@w)
+    grad_coefficient = common_sigmoid - y
+    grad = np.transpose(tx)@grad_coefficient # Wrong way?
+    
+    return grad
+
+def logistic_gradient_descent(y, tx, w, gamma):
+    """
+    Do one step of gradient descent using logistic regression.
+    Return the loss and the updated w.
+    """
+    loss = calculate_loss(y,tx,w)
+    
+    grad = calculate_gradient(y,tx,w)
+
+    w = w - gamma*grad
+    
+    return loss, w
+
+def penalized_logistic_regression(y, tx, w, lambda_):
+    """return the loss, gradient"""
+    grad = calculate_logistic_gradient(y, tx, w) + 2*lambda_*w
+    loss = calculate_logistic_loss(y, tx, w) + lambda_*(np.transpose(w)@w)
+    return loss, grad
+
+def penalized_logistic_gradient_descent(y, tx, w, gamma, lambda_):
+    """
+    Do one step of gradient descent, using the penalized logistic regression.
+    Return the loss and updated w.
+    """
+    loss, grad = penalized_logistic_regression(y,tx,w,lambda_)
+    w = w - gamma*grad
+
+    return loss, w
 
 
 
