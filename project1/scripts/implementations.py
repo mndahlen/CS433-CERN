@@ -1,5 +1,5 @@
 import numpy as np
-
+import random
 # Mandatory functions
 
 # Should be okay according to requirements. Not tested
@@ -52,10 +52,32 @@ def ridge_regression(y, tx, lambda_):
 # Logistic regression with gradient descent
 def logistic_regression(y, tx, initial_w, max_iters, gamma):
     w = initial_w
-    for iter in range(max_iters):
+    for iter_ in range(max_iters):
+        if iter_%5000 == 0:
+            loss = calculate_logistic_loss(y, tx, w)
+            print("iter: {}/{}, loss = {}\n".format(iter_,max_iters,loss))
         grad = calculate_logistic_gradient(y, tx, w)
         w = w - gamma*grad
+        
     loss = calculate_logistic_loss(y, tx, w)
+    print("iter: {}/{}, loss = {}\n".format(iter_,max_iters,loss))
+    return (w, loss)
+
+def logistic_regression_SGD(y, tx, initial_w, max_iters, gamma,batch_ratio = 0.5,):
+    w = initial_w
+    size_data = y.shape[0]
+    batch_size = int(size_data*batch_ratio)
+
+    for iter_ in range(max_iters):
+        if iter_%1000 == 0:
+            loss = calculate_logistic_loss(y, tx, w)
+            print("iter: {}/{}, loss = {}\n".format(iter_,max_iters,loss))
+            indices = random.sample(range(0, size_data), batch_size)
+        grad = calculate_logistic_gradient(y[indices], tx[indices], w)
+        w = w - gamma*grad
+        
+    loss = calculate_logistic_loss(y, tx, w)
+    print("iter: {}/{}, loss = {}\n".format(iter_,max_iters,loss))
     return (w, loss)
 
 # Should be okay according to requirements. Not tested
@@ -126,7 +148,7 @@ def sigmoid(t):
     """apply the sigmoid function on t."""
     return 1/(1 + np.exp(-t))
 
-def calculate_logistic_loss(y, tx, w):
+def calculate_logistic_loss_w_loop(y, tx, w):
     """compute the loss: negative log likelihood."""
     loss = 0
     for i, x_i in enumerate(tx):
@@ -134,13 +156,29 @@ def calculate_logistic_loss(y, tx, w):
         loss -= y[i]*np.log(sig) + (1-y[i])*np.log(1-sig)
     return loss[0]
 
-def calculate_logistic_gradient(y, tx, w):
+def calculate_logistic_gradient_w_loop(y, tx, w):
     """compute the gradient of loss."""
     grad = 0
     for i, x_i in enumerate(tx):
         sig = sigmoid(x_i.dot(w))
         grad -= (y[i]-sig)*x_i
     return grad
+
+def calculate_logistic_gradient(y, tx, w):
+    """compute the gradient of loss."""
+    sig = sigmoid(tx@w)
+    grad_coefficient = sig - y
+    grad = np.transpose(tx)@grad_coefficient
+    
+    return grad
+
+def calculate_logistic_loss(y, tx, w):
+    """compute the loss: negative log likelihood."""
+    sig = sigmoid(tx@w)
+    N = (y.shape)[0]
+    loss = np.transpose(y)@np.log(sig) + np.transpose(np.ones(y.shape) - y)@np.log(np.ones(sig.shape) - sig)
+    
+    return -loss/N
 
 
 
