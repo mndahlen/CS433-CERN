@@ -62,3 +62,36 @@ def de_standardize(x, mean_x, std_x):
     x = x * std_x
     x = x + mean_x
     return x
+
+# Remove varibles at indexes indicated in remove_idxs
+def remove_variables(x, remove_idxs):
+    return np.delete(x, remove_idxs, axis=1)
+
+# Insert zeros afterwards to be able to run tests
+# Send with x as reference for size
+# Yeah, really b function. I was tired and this is only run once
+def insert_zeros(w, size, insert_idxs):
+    w_idx = 0
+    new_w = []
+    for idx in range(size):
+        if idx in insert_idxs:
+            new_w.append(0)
+        else:
+            new_w.append(w[w_idx])
+    return new_w
+
+    # Do this with loop for simplicity
+    
+    return np.insert(x, insert_idxs, 0, axis=1)
+
+def augment(x, powers):
+    ret_x = []
+    for i, xi in enumerate(x):
+        new_xi = []
+        for j, pw in enumerate(powers):
+            new_xi = new_xi + [xi[j]**exp for exp in range(1, int(pw) + 1)]
+        ret_x.append(new_xi)
+    return np.array(ret_x)
+    
+
+    
