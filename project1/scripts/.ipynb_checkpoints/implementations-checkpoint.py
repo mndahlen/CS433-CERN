@@ -1,5 +1,7 @@
 import numpy as np
 import random
+
+from numpy.core.numeric import Inf
 # Mandatory functions
 
 # Should be okay according to requirements. Not tested
@@ -50,12 +52,22 @@ def ridge_regression(y, tx, lambda_):
 
 # Should be okay according to requirements. Not tested
 # Logistic regression with gradient descent
-def logistic_regression(y, tx, initial_w, max_iters, gamma):
+def logistic_regression(y, tx, initial_w, max_iters, gamma, converge_limit):
     w = initial_w
+    last_loss = 0
+    loss = Inf
     for iter_ in range(max_iters):
-        if iter_%5000 == 0:
+        if iter_%500 == 0:
+            last_loss = loss
             loss = calculate_logistic_loss(y, tx, w)
+            if (np.isnan(loss)):
+                print("Encountered nan")
+                return (w, loss)
             print("iter: {}/{}, loss = {}\n".format(iter_,max_iters,loss))
+            
+            if (abs(loss - last_loss) < converge_limit):
+                return (w, loss)
+            
         grad = calculate_logistic_gradient(y, tx, w)
         w = w - gamma*grad
         
@@ -67,7 +79,6 @@ def logistic_regression_SGD(y, tx, initial_w, max_iters, gamma,batch_ratio = 0.5
     w = initial_w
     size_data = y.shape[0]
     batch_size = int(size_data*batch_ratio)
-
     for iter_ in range(max_iters):
         if iter_%1000 == 0:
             loss = calculate_logistic_loss(y, tx, w)
@@ -147,22 +158,6 @@ def compute_mae(y,tx,w):
 def sigmoid(t):
     """apply the sigmoid function on t."""
     return 1/(1 + np.exp(-t))
-
-def calculate_logistic_loss_w_loop(y, tx, w):
-    """compute the loss: negative log likelihood."""
-    loss = 0
-    for i, x_i in enumerate(tx):
-        sig = sigmoid(x_i.dot(w))
-        loss -= y[i]*np.log(sig) + (1-y[i])*np.log(1-sig)
-    return loss[0]
-
-def calculate_logistic_gradient_w_loop(y, tx, w):
-    """compute the gradient of loss."""
-    grad = 0
-    for i, x_i in enumerate(tx):
-        sig = sigmoid(x_i.dot(w))
-        grad -= (y[i]-sig)*x_i
-    return grad
 
 def calculate_logistic_gradient(y, tx, w):
     """compute the gradient of loss."""

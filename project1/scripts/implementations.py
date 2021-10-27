@@ -136,6 +136,7 @@ def split_data(x, y, ratio, seed=1):
 
     return x_train,y_train,x_test,y_test
 
+
 # Cost functions
 def compute_rmse(y,tx,w):
     error = np.subtract(y,(tx@w))
@@ -154,28 +155,11 @@ def compute_mae(y,tx,w):
     loss = np.sum(np.absolute(error))/N
     return loss
 
+
 # For logistic regression
 def sigmoid(t):
     """apply the sigmoid function on t."""
     return 1/(1 + np.exp(-t))
-
-def calculate_logistic_loss_w_loop(y, tx, w):
-    """compute the loss: negative log likelihood."""
-    loss = 0
-    for i, x_i in enumerate(tx):
-        sig = sigmoid(x_i.dot(w))
-        loss -= y[i]*np.log(sig) + (1-y[i])*np.log(1-sig)
-    if (type(loss) == list):
-        loss = loss[0]
-    return loss
-
-def calculate_logistic_gradient_w_loop(y, tx, w):
-    """compute the gradient of loss."""
-    grad = 0
-    for i, x_i in enumerate(tx):
-        sig = sigmoid(x_i.dot(w))
-        grad -= (y[i]-sig)*x_i
-    return grad
 
 def calculate_logistic_gradient(y, tx, w):
     """compute the gradient of loss."""
