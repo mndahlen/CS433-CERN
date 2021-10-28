@@ -91,6 +91,19 @@ def augment(x, powers):
         for p in range(1,P+1):
             augmented.append(np.power(x[:,i],p))
     return np.transpose(np.asarray(augmented))
+
+def create_features(x_train,x_test):
+    remove_vars = [2, 4, 7, 8, 9, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+    augment_vars = [3, 2, 1, 1, 2, 3, 3, 2]
+
+    x_train, mean_x, std_x = standardize(x_train)
+    x_test, mean_x_test, std_x_test = standardize(x_test)
+    x_train = remove_variables(x_train, remove_vars)
+    x_test = remove_variables(x_test, remove_vars)
+    x_train = augment(x_train, augment_vars)
+    x_test = augment(x_test, augment_vars)
+    
+    return x_train, x_test
         
 # Misc functions
 def compute_gradient(y, tx, w):
