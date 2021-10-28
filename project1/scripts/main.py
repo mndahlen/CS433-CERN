@@ -19,7 +19,7 @@ y_train, x_train,  idx_train = load_csv_data(DATA_TRAIN_PATH)
 yb, tX_test, ids_test = load_csv_data(DATA_TEST_PATH)
 print("Finally completed loading data!\nThat was {} seconds! Pandas does the same in 6 seconds zipped!".format(int(time.time() - t0)))
 
-# FIX FEATURES FOR TRAINING
+# CREATE FEATURES FOR TRAINING
 print("Fixing features...")
 x_train, x_test = create_features(x_train, tX_test)
 x_train,y_train,my_x_test,my_y_test = split_data(x_train, y_train, 0.5, seed=7)
