@@ -2,33 +2,50 @@
 """some helper functions for project 1."""
 import csv
 import numpy as np
+import pandas as pd
+import time
 
-
-def load_csv_data(data_path, sub_sample=False):
+def load_csv_data(data_path, sub_sample=False, use_pandas = False, classes = [1,-1]):
     """Loads data and returns y (class labels), tX (features) and ids (event ids)"""
-    y = np.genfromtxt(data_path, delimiter=",", skip_header=1, dtype=str, usecols=1)
-    x = np.genfromtxt(data_path, delimiter=",", skip_header=1, dtype=float)
-    ids = x[:, 0].astype(np.int)
-    input_data = x[:, 2:]
+    t0 = time.time()
+    if use_pandas:
+        print("Loading data with Pandas")
+        data = pd.read_csv(data_path)
+        data.loc[data['Prediction'] == 's','Prediction'] = classes[0]
+        data.loc[data['Prediction'] == 'b','Prediction'] = classes[1]
+        data.loc[data['Prediction'] == '?','Prediction'] = -10
+        data['Prediction'] = pd.to_numeric(data['Prediction'])
+        yb = data['Prediction'].to_frame().to_numpy().flatten()
+        ids = data['Id'].to_frame().to_numpy()
+        data.drop(['Id','Prediction'], 1, inplace=True)
+        input_data = data.to_numpy()
 
-    # convert class labels from strings to binary (-1,1)
-    yb = np.ones(len(y))
-    yb[np.where(y=='b')] = 0
-    
-    # sub-sample
-    if sub_sample:
-        yb = yb[::50]
-        input_data = input_data[::50]
-        ids = ids[::50]
+    else:
+        print("Loading data with slow given function")
+        y = np.genfromtxt(data_path, delimiter=",", skip_header=1, dtype=str, usecols=1)
+        x = np.genfromtxt(data_path, delimiter=",", skip_header=1, dtype=float)
+        ids = x[:, 0].astype(np.int)
+        input_data = x[:, 2:]
+
+        # convert class labels from strings to binary (-1,1)
+        yb = np.ones(len(y))
+        yb[np.where(y=='b')] = 0
+        
+        # sub-sample
+        if sub_sample:
+            yb = yb[::50]
+            input_data = input_data[::50]
+            ids = ids[::50]
+    print("Finally completed loading data!\nThat was {} seconds!".format(int(time.time() - t0)))
 
     return yb, input_data, ids
 
 
-def predict_labels(tx, w):
+def predict_labels(tx, w, classes = [1,-1]):
     """Generates class predictions given weights, and a test data matrix"""
-    y_pred = np.matmul(tx, w)
-    y_pred[np.where(y_pred <= 0)] = -1
-    y_pred[np.where(y_pred > 0)] = 1
+    y_pred = tx@w
+    y_pred[np.where(y_pred > 0)] = classes[0]
+    y_pred[np.where(y_pred <= 0)] = classes[1]
     
     return y_pred
 

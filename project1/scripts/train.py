@@ -12,7 +12,7 @@ def train_model(y_train, x_train, hyperparameters, algorithm = "logistic_regress
         while (np.isnan(loss)):
             w, loss = logistic_regression(y_train, x_train, initial_w, max_iters, gamma, conv_limit)
             gamma = gamma/10
-            final_w = w     
+            final_w = w   
     else:
         print("Invalid train algorithm selected")
 
