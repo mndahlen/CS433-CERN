@@ -16,7 +16,7 @@ max_iters = 10000
 gamma = 0.001
 tx = np.c_[np.ones((y.shape[0], 1)), x]
 initial_w = w = np.zeros(tx.shape[1])
-'''
+
 w_GD, loss_GD = least_squares_GD(y, tx, initial_w, max_iters, gamma)
 w_SGD, loss_SGD = least_squares_SGD(y, tx, initial_w, max_iters, gamma)
 w_calc, loss_calc = least_squares(y, tx)
@@ -31,7 +31,7 @@ for lambda_ in range(10):
     print("Ridge regression loss: {lo}, weights: {we} and lambda: {la}".format(lo=loss_reg, we=w_reg, la=lambda_))
 print("These should increase loss and decrease weights")
 
-'''
+
 ## Test of the logistic regression function
 y = np.random.randint(low=0, high=2, size=(1,75))[0]
 print(y)

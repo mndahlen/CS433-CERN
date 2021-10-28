@@ -92,12 +92,28 @@ def logistic_regression_SGD(y, tx, initial_w, max_iters, gamma,batch_ratio = 0.5
     return (w, loss)
 
 # Should be okay according to requirements. Not tested
-def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
-    # start the logistic regression
-    for iter in range(max_iters):
-        grad = calculate_logistic_gradient(y, tx, w) + 2*lambda_*w
+def reg_logistic_regression(y, tx, initial_w, max_iters, gamma, converge_limit, _lambda):
+    w = initial_w
+    last_loss = 0
+    loss = Inf
+    for iter_ in range(max_iters):
+        if iter_%500 == 0:
+            last_loss = loss
+            loss = calculate_logistic_loss(y, tx, w)
+            if (np.isnan(loss)):
+                print("Encountered nan")
+                return (w, loss)
+            print("iter: {}/{}, loss = {}\n".format(iter_,max_iters,loss))
+            
+            if (abs(loss - last_loss) < converge_limit):
+                return (w, loss)
+            
+        grad = calculate_logistic_gradient(y, tx, w) + _lambda*w
+        
         w = w - gamma*grad
+        
     loss = calculate_logistic_loss(y, tx, w)
+    print("iter: {}/{}, loss = {}\n".format(iter_,max_iters,loss))
     return (w, loss)
 
 # Misc functions
