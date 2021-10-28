@@ -1,0 +1,6 @@
+*.DS_Store
+*.ipynb_checkpoints
+*.idea
+*__pycache__*
+project1/data/test.csv
+project1/data/train.csv
