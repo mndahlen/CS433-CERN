@@ -85,13 +85,12 @@ def insert_zeros(w, size, insert_idxs):
     return np.insert(x, insert_idxs, 0, axis=1)
 
 def augment(x, powers):
-    ret_x = []
-    for i, xi in enumerate(x):
-        new_xi = []
-        for j, pw in enumerate(powers):
-            new_xi = new_xi + [xi[j]**exp for exp in range(1, int(pw) + 1)]
-        ret_x.append(new_xi)
-    return np.array(ret_x)
+    augmented = []
+    for i in range(0,len(powers)):
+        P = powers[i]
+        for p in range(1,P+1):
+            augmented.append(np.power(x[:,i],p))
+    return np.transpose(np.asarray(augmented))
         
 # Misc functions
 def compute_gradient(y, tx, w):

@@ -10,20 +10,34 @@ from implementations import reg_logistic_regression, split_data, logistic_regres
 DATA_TRAIN_PATH = '../data/train.csv'
 DATA_TEST_PATH = '../data/test.csv'
 
+print("what")
 # GET TRAIN AND TEST DATA
 y_train, x_train,  idx_train = load_csv_data(DATA_TRAIN_PATH)
 yb, tX_test, ids_test = load_csv_data(DATA_TEST_PATH)
+print("the")
 
 # FIX FEATURES FOR TRAINING
 remove_vars = [2, 4, 7, 8, 9, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
 augment_vars = [3, 2, 1, 1, 2, 3, 3, 2]
+print("fuck")
 
+print(1)
 x_train, mean_x, std_x = standardize(x_train)
+print(2)
 x_test, mean_x_test, std_x_test = standardize(tX_test)
+print(3)
 x_train = remove_variables(x_train, remove_vars)
+print(4)
+print(x_train.shape)
 x_test = remove_variables(x_test, remove_vars)
+print(5)
+print(x_test.shape)
 x_train = augment(x_train, augment_vars)
+print(x_train.shape,x_train_old.shape)
+print(6)
 x_test = augment(x_test, augment_vars)
+print(x_test.shape)
+print(7)
 
 x_train,y_train,my_x_test,my_y_test = split_data(x_train, y_train, 0.5, seed=7)
 x_train = np.array(x_train)
