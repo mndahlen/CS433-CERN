@@ -92,6 +92,79 @@ def augment(x, powers):
             new_xi = new_xi + [xi[j]**exp for exp in range(1, int(pw) + 1)]
         ret_x.append(new_xi)
     return np.array(ret_x)
-    
+        
+# Misc functions
+def compute_gradient(y, tx, w):
+    """Compute the gradient."""
+    e = y - tx.dot(w)
+    return -1/(y.shape[0])*(np.transpose(tx)).dot(e)
 
+def build_poly_1D(x, degree):
+    """polynomial basis functions for input data x, for j=0 up to j=degree."""
+    poly = np.c_[np.ones(x.shape[0]),x]
+    for d in range(2,degree + 1):
+        poly = np.c_[poly, np.power(x,d)]
+    return poly
+
+def split_data(x, y, ratio, seed=1):
+    """
+    split the dataset based on the split ratio. If ratio is 0.8 
+    you will have 80% of your data set dedicated to training 
+    and the rest dedicated to testing
+    """
+    # Set seed and shuffle data
+    np.random.seed(seed)
+    x_w_output = np.c_[x,y]
+    np.random.shuffle(x_w_output)
+    x_shuffled = x_w_output[:,:-1]
+    y_shuffled = x_w_output[:,-1]
+    # Prepare split index
+    split_index = int(np.round((x_shuffled.shape)[0]*(ratio)))
+
+    # Split
+    x_train = x_shuffled[:split_index]
+    y_train = y_shuffled[:split_index]
+    x_test = x_shuffled[split_index:]
+    y_test = y_shuffled[split_index:]
+
+    return x_train,y_train,x_test,y_test
+
+# Cost functions
+def compute_rmse(y,tx,w):
+    error = np.subtract(y,(tx@w))
+    N = len(y)
+    MSE = np.transpose(error)@error/(2*N)
+    loss = np.sqrt(2 * MSE)
+    return loss
+
+def compute_mse(y, tx, w):
+    e = y - np.dot(tx, w)
+    return 1/(2*y.shape[0])*np.transpose(e).dot(e)
+
+def compute_mae(y,tx,w):
+    error = np.subtract(y,(tx@w).flatten())
+    N = len(y)
+    loss = np.sum(np.absolute(error))/N
+    return loss
+
+# For logistic regression
+def sigmoid(t):
+    """apply the sigmoid function on t."""
+    return 1/(1 + np.exp(-t))
+
+def calculate_logistic_gradient(y, tx, w):
+    """compute the gradient of loss."""
+    sig = sigmoid(tx@w)
+    grad_coefficient = sig - y
+    grad = np.transpose(tx)@grad_coefficient
     
+    return grad
+
+def calculate_logistic_loss(y, tx, w):
+    """compute the loss: negative log likelihood."""
+    sig = sigmoid(tx@w)
+    N = (y.shape)[0]
+    loss = np.transpose(y)@np.log(sig) + np.transpose(np.ones(y.shape) - y)@np.log(np.ones(sig.shape) - sig)
+    
+    return -loss/N
+

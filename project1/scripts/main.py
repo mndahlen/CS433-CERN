@@ -28,7 +28,13 @@ x_test = augment(x_test, augment_vars)
 x_train,y_train,my_x_test,my_y_test = split_data(x_train, y_train, 0.5, seed=7)
 x_train = np.array(x_train)
 
+
+
 # HYPERPARAMETERS
+hyperparameters = {
+    "gamma":1e-4,
+    "lambda":0,
+}
 gamma = 1e-4
 _lambda = 0
 max_iters = 100000
