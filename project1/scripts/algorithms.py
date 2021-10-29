@@ -1,20 +1,10 @@
 import numpy as np
 import time
-from helpers import load_csv_data, predict_labels
-from data_engineering import deal_with_outliers, standardize_data
-from implementations import compute_gradient_log_reg_l2, compute_neg_log_likelihood_l2, logistic_regression
-
-data_path = '../data/train.csv'
+from implementations import *
 
 
-def ADAM(y, tx, lambda_, initial_w, max_iters):
-	"""
-	Immplementation of ADAM.
-	:param fx:
-	:param gradf:
-	:param parameter:
-	:return:
-	"""
+def ADAM(y, tx, lambda_, initial_w, max_iters, loss_function, gradient_function):
+	"""Immplementation of ADAM."""
 	w = initial_w
 	alpha = 1.0
 	beta1 = 0.9
@@ -30,7 +20,7 @@ def ADAM(y, tx, lambda_, initial_w, max_iters):
 
 		tic = time.time()
 
-		gradient = compute_gradient_log_reg_l2(y, tx, w, lambda_)
+		gradient = gradient_function(w)
 
 		m_next = beta1 * m + (1 - beta1) * gradient
 		v_next = beta2 * v + (1 - beta2) * np.square(gradient)
@@ -44,11 +34,11 @@ def ADAM(y, tx, lambda_, initial_w, max_iters):
 
 		# Compute error and save data to be plotted later on.
 		times.append(time.time() - tic)
-		loss = compute_neg_log_likelihood_l2(y, tx, w, lambda_)
+		loss = loss_function(w)
 		losses.append(loss)
 
 		# Print the information.
-		if (iter % 100 == 0) or (iter == 0):
+		if (iter % 1000 == 0) or (iter == 0):
 			print('Iter = {:4d},  Loss = {:0.9f}'.format(iter, loss))
 
 		# Prepare the next iteration
@@ -57,33 +47,21 @@ def ADAM(y, tx, lambda_, initial_w, max_iters):
 		m = m_next
 		v = v_next
 
-	loss = compute_neg_log_likelihood_l2(y, tx, w, lambda_)
+	loss = loss_function(w)
 	losses.append(loss)
+	best_iter = np.argmin(losses)
 
-	return Ws, losses
+	return Ws[best_iter], losses[best_iter]
 
 
-def LSAGDR(y, tx, lambda_, initial_w, max_iters):
-	"""
-	Function:  [x, info] = LSAGDR (fx, gradf, parameter)
-	Purpose:   Implementation of AGD with line search and adaptive restart.
-	Parameter: x0         - Initial estimate.
-		   maxit      - Maximum number of iterations.
-		   Lips       - Lipschitz constant for gradient.
-		   strcnvx    - Strong convexity parameter of f(x).
-	:param fx:
-	:param gradf:
-	:param parameter:
-	:return:
-	"""
+def LSAGDR(y, tx, lambda_, initial_w, max_iters, loss_function, gradient_function):
+	"""Implementation of line search accelerated gradient descent with restart"""
 
 	w = initial_w
 	maxit = max_iters
 	L = lipshitz_constant(tx, lambda_)
 	z = w
 	t = 1.0
-	loss = lambda w: compute_neg_log_likelihood_l2(y, tx, w, lambda_)
-	gradient = lambda w: compute_gradient_log_reg_l2(y, tx, w, lambda_)
 
 	losses = []
 	Ws =[w]
@@ -93,41 +71,41 @@ def LSAGDR(y, tx, lambda_, initial_w, max_iters):
 		# Start the clock.
 		tic = time.time()
 
-		d = - gradient(z)
+		d = - gradient_function(z)
 		L0 = L / 2
 		i = 0
 
 		while True:
-			if loss(z + (1 / ((2**i) * L0)) * d) <= loss(z) - (1 / ((2**(i + 1)) * L0)) * np.linalg.norm(d)**2:
+			if loss_function(z + (1 / ((2**i) * L0)) * d) <= loss_function(z) - (1 / ((2**(i + 1)) * L0)) * np.linalg.norm(d)**2:
 				L_next = (2**i) * L0
 				alpha = 1 / L_next
 				break
 			i = i + 1
 
-		w_next = z - alpha * gradient(z)
+		w_next = z - alpha * gradient_function(z)
 
-		if loss(w) < loss(w_next):
+		if loss_function(w) < loss_function(w_next):
 			z, t = w, 1.0
-			d = - gradient(z)
+			d = - gradient_function(z)
 			i = 0
 			while True:
-				if loss(z + (1 / ((2**i) * L0)) * d) <= loss(z) - (1 / ((2**(i + 1)) * L0)) * np.linalg.norm(d)**2:
+				if loss_function(z + (1 / ((2**i) * L0)) * d) <= loss_function(z) - (1 / ((2**(i + 1)) * L0)) * np.linalg.norm(d)**2:
 					L_next = (2**i) * L0
 					alpha = 1 / L_next
 					break
 				i = i + 1
-			w_next = z - alpha * gradient(z)
+			w_next = z - alpha * gradient_function(z)
 
 		t_next = (1 / 2) * (1 + np.sqrt(1 + 4 * (L_next / L) * t**2))
 		z_next = w_next + ((t - 1) / t_next) * (w_next - w)
 
 		# Compute error and save data to be plotted later on.
 		times.append(time.time() - tic)
-		losses.append(loss(w))
+		losses.append(loss_function(w))
 
 		# Print the information.
 		if (iter % 5 == 0) or (iter == 0):
-			print('Iter = {:4d},  f(x) = {:0.9f}'.format(iter, losses[-1]))
+			print('Iter = {:4d},  Loss = {:0.9f}'.format(iter, losses[-1]))
 
 		# Prepare the next iteration
 		w = w_next
@@ -136,41 +114,42 @@ def LSAGDR(y, tx, lambda_, initial_w, max_iters):
 		z = z_next
 		L = L_next
 
-	losses.append(loss(w))
+	losses.append(loss_function(w))
+	best_iter = np.argmin(losses)
 
-	return Ws, losses
+	return Ws[best_iter], losses[best_iter]
 
 
 def lipshitz_constant(tx, mu=0.0):
 	return (1 / 2) * np.linalg.norm(tx, 'fro') ** 2 + mu
 
 
-if __name__ == '__main__':
-	print('Loading data')
-	y, X, ids = load_csv_data('../data/train.csv', sub_sample=False)
-	deal_with_outliers(X)
-	standardize_data(X)
-	print('Data loaded')
+def build_model(model, algo, hyperparameters):
+	assert model in ['logistic_regression', 'l2_reg_logistic_regression'], 'The model is not available.'
+	assert algo in ['GD', 'SGD', 'ADAM', 'LSAGDR'], 'The optimization algorithm is not available'
 
-	max_iters = 1000
-	threshold = 1e-8
-	gamma = 0.01
-	lambda_ = 0.1
-	losses = []
-	y = y.reshape((-1, 1))  # careful
-	tx = np.c_[np.ones((y.shape[0], 1)), X]
-	initial_w = np.zeros((tx.shape[1], 1))
+	gamma = hyperparameters["gamma"]
+	initial_w = hyperparameters["initial_w"]
+	max_iters = hyperparameters["max_iters"]
+	conv_limit = hyperparameters["conv_limit"]
+	lambda_ = hyperparameters["lambda"]
 
-	print('Starting training')
-	# Ws, losses = ADAM(y, tx, lambda_, initial_w, max_iters)
-	Ws, losses = LSAGDR(y, tx, lambda_, initial_w, max_iters)
-	# w, loss = logistic_regression(y, tx, initial_w, max_iters, gamma)
+	if algo == 'GD':
+		if model == 'logistic_regression':
+			return lambda y, tx: logistic_regression(y, tx, initial_w, max_iters, gamma, conv_limit)
+		if model == 'l2_reg_logistic_regression':
+			return lambda y, tx: reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma, conv_limit)
 
-	print('Ws =', len(Ws))
-	print('losses =', len(losses))
-	w = Ws[np.argmin(losses)]
-	print('Training done')
+	if algo == 'SGD':
+		if model == 'logistic_regression':
+			return lambda y, tx: logistic_regression_SGD(y, tx, initial_w, max_iters, gamma, conv_limit)
+		if model == 'l2_reg_logistic_regression':
+			return lambda y, tx: reg_stochastic_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma, conv_limit)
 
-	y_pred = predict_labels(tx, w)
-	acc = np.sum(y_pred == y) / len(y)
-	print('Accuracy = ', acc)
+	if algo == 'ADAM':
+		return lambda y, tx: ADAM(y, tx, lambda_, initial_w, max_iters, lambda w: compute_neg_log_likelihood_l2(y, tx, w, lambda_), lambda w: compute_gradient_log_reg_l2(y, tx, w, lambda_))
+
+	if algo == 'LSAGDR':
+		return lambda y, tx: LSAGDR(y, tx, lambda_, initial_w, max_iters, lambda w: compute_neg_log_likelihood_l2(y, tx, w, lambda_), lambda w: compute_gradient_log_reg_l2(y, tx, w, lambda_))
+
+	return None

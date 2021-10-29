@@ -1,7 +1,6 @@
 from implementations import *
 import numpy as np
-
-from proj1_helpers import augment
+from feature_engineering import augment
 
 ## Test of all mandatory functions with toy data set. Just to make sure they behave
 
@@ -38,7 +37,7 @@ print(y)
 lambda_ = 0
 gamma = 0.01
 converge_limit = 1
-w_log, loss_log = reg_logistic_regression_SGD(y, tx, lambda_, initial_w, max_iters, gamma, converge_limit)
+w_log, loss_log = reg_stochastic_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma, converge_limit)
 
 print(loss_log)
 

@@ -4,8 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from proj1_helpers import *
+from helpers import *
+from feature_engineering import *
 from implementations import *
+
 
 ## Visualize all variables contra y. 
 def visual_all_vars(y, x):
@@ -21,6 +23,7 @@ def visual_all_vars(y, x):
         for col in range(cols):
             axs[row, col].plot(x[:, row*rows + col], y)
     plt.show()
+
 
 ## Histogram plots of all variables. Plots for y = 0 and y = 1
 def hists(y, x):
@@ -50,8 +53,7 @@ def hists(y, x):
             axs[row, col].hist(x_0_tmp, bins=100, range=ra, alpha=0.5)
             axs[row, col].hist(x_1_tmp, bins=100, range=ra, alpha=0.5)
     plt.show()
-from proj1_helpers import *
-from implementations import *
+
 
 DATA_TRAIN_PATH = '~/Documents/Machine-Learning/CS433/project1/data/train.csv.zip'
 DATA_TEST_PATH = '~/Documents/Machine-Learning/CS433/project1/data/test.csv.zip'
@@ -61,8 +63,8 @@ data_train = pd.read_csv(DATA_TRAIN_PATH)
 data_test = pd.read_csv(DATA_TEST_PATH) # NOTE: This is test for SUBMISSION, not test for training.
 
 # Make Y binary [-1,1]
-data_train.loc[data_train['Prediction'] == 's','Prediction'] = 1
-data_train.loc[data_train['Prediction'] == 'b','Prediction'] = 0
+data_train.loc[data_train['Prediction'] == 's', 'Prediction'] = 1
+data_train.loc[data_train['Prediction'] == 'b', 'Prediction'] = 0
 data_train['Prediction'] = pd.to_numeric(data_train['Prediction'])
 
 # Extract y
