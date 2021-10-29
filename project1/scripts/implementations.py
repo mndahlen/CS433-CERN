@@ -89,7 +89,8 @@ def logistic_regression_SGD(y, tx, initial_w, max_iters, gamma,batch_ratio = 0.5
 # Should be okay according to requirements. Not tested
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
     # start the logistic regression
-    for iter in range(max_iters):
+    w = initial_w
+    for iter_ in range(max_iters):
         if iter_%1000 == 0:
             loss = calculate_logistic_loss(y, tx, w)
             print("iter: {}/{}, loss = {}\n".format(iter_,max_iters,loss))

@@ -28,16 +28,20 @@ print("Features fixed!")
 # HYPERPARAMETERS
 hyperparameters = {
     "gamma":1e-6,
-    "lambda":0,
-    "max_iters" : 10000,
+    "lambda":0.6,
+    "max_iters" : 8000,
     "initial_w" : np.zeros(len(x_train[0])),
     "conv_limit" : 1e-10
 }
 
 # TRAIN
 print("Training...")
-w, loss = train_model(y_train, x_train, hyperparameters, algorithm = "logistic_regression")
+w, loss = train_model(y_train, x_train, hyperparameters, algorithm = "reg_logistic_regression")
 print("Training complete!")
+
+# EVAL TRAINED MODEL
+y_eval = predict_labels(x_eval, w, classes = [1,-1])
+create_csv_submission(ids_eval, y_eval, 'submission')
 
 # TEST TRAINED MODEL
 print("Testing...")
@@ -46,9 +50,7 @@ y_pred = predict_labels(x_test, w, classes = [1,0])
 diff = y_pred - y_test.reshape(y_test.shape[0],1)
 print("Model classified {} % correct".format((1 -  sum(abs(diff))/y_test.shape[0])[0]))
 
-# EVAL TRAINED MODEL
-y_eval = predict_labels(x_eval, w, classes = [1,-1])
-create_csv_submission(ids_eval, y_eval, 'submission')
+
 
 
 

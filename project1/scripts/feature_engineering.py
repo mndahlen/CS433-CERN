@@ -2,20 +2,16 @@ from helpers import load_csv_data
 import numpy as np
 
 def create_features(x_train,x_test):
-    # i = 0
-    # for feature in range(0,x_train.shape[1]):
-    #     col_train = x_train[:,feature]
-    #     col_test = x_test[:,feature]
-    #     print(col_train[col_train==-999].shape,col_test[col_test==-999].shape,i)
-    #     i += 1
-
     x_train = handle_outliers(x_train)
     x_test = handle_outliers(x_test)
 
     x_train, mean_x, std_x = standardize(x_train)
     x_test, mean_x_test, std_x_test = standardize(x_test)
 
-    poly_features = [[0],[1],[2,2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13]]
+    # Gave 78% [[0],[1],[2,2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13]]
+    # Gave 79.5% [[0],[0,1],[0,2],[0,7],[0,16],[1],[1,10],[0,0],[2,7],[2,2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13]]
+    # gave 79.8% [[0],[0,1],[0,2],[0,7],[0,16],[1],[1,10],[0,0],[2,7],[2,2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[16],[16,16],[17],[18],[20],[24],[25]]
+    poly_features = [[0],[0,1],[0,2],[0,7],[0,16],[1],[1,10],[0,0],[2,7],[2,2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[16],[16,16],[17],[18],[20],[24],[25]]
     x_train = create_poly(x_train,poly_features)
     x_test = create_poly(x_test,poly_features)
 
@@ -40,11 +36,6 @@ def handle_outliers(data, remove_outliers = False):
 		data[:,i] = col
 
 	return data
-
-def standardize_data(data):
-	for i in range(data.shape[1]):
-		data[1:, i] = (data[1:, i] - np.mean(data[1:, i])) / np.std(data[1:, i])
-	return None
 
 def augment(x, powers):
     augmented = []
