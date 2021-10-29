@@ -28,8 +28,8 @@ def load_csv_data(data_path, sub_sample=False, use_pandas = False, classes = [1,
         input_data = x[:, 2:]
 
         # convert class labels from strings to binary (-1,1)
-        yb = np.ones(len(y))
-        yb[np.where(y=='b')] = 0
+        yb = np.ones(len(y))*classes[0]
+        yb[np.where(y=='b')] = classes[1]
         
         # sub-sample
         if sub_sample:
@@ -67,36 +67,12 @@ def create_csv_submission(ids, y_pred, name):
 # Remove varibles at indexes indicated in remove_idxs
 def remove_variables(x, remove_idxs):
     return np.delete(x, remove_idxs, axis=1)
-
-# Insert zeros afterwards to be able to run tests
-# Send with x as reference for size
-# Yeah, really b function. I was tired and this is only run once
-def insert_zeros(w, size, insert_idxs):
-    w_idx = 0
-    new_w = []
-    for idx in range(size):
-        if idx in insert_idxs:
-            new_w.append(0)
-        else:
-            new_w.append(w[w_idx])
-    return new_w
-
-    # Do this with loop for simplicity
-    
-    return np.insert(x, insert_idxs, 0, axis=1)
         
 # Misc functions
 def compute_gradient(y, tx, w):
     """Compute the gradient."""
     e = y - tx.dot(w)
     return -1/(y.shape[0])*(np.transpose(tx)).dot(e)
-
-def build_poly_1D(x, degree):
-    """polynomial basis functions for input data x, for j=0 up to j=degree."""
-    poly = np.c_[np.ones(x.shape[0]),x]
-    for d in range(2,degree + 1):
-        poly = np.c_[poly, np.power(x,d)]
-    return poly
 
 def split_data(x, y, ratio, seed=1):
     """

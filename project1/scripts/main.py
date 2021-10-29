@@ -17,7 +17,7 @@ DATA_EVAL_PATH = '../data/test.csv'
 
 # GET TRAIN AND TEST DATA
 y_train, x_train,  idx_train = load_csv_data(DATA_TRAIN_PATH, use_pandas=True, classes=[1,0])
-yb, x_eval, ids_eval = load_csv_data(DATA_EVAL_PATH, use_pandas=True, classes=[1,0])
+yb, x_eval, idx_eval = load_csv_data(DATA_EVAL_PATH, use_pandas=True, classes=[1,0])
 
 # CREATE FEATURES FOR TRAIN, TEST AND EVAL DATA
 print("Fixing features...")
@@ -29,19 +29,19 @@ print("Features fixed!")
 hyperparameters = {
     "gamma":1e-6,
     "lambda":0.6,
-    "max_iters" : 8000,
+    "max_iters" : 1000,
     "initial_w" : np.zeros(len(x_train[0])),
     "conv_limit" : 1e-10
 }
 
 # TRAIN
 print("Training...")
-w, loss = train_model(y_train, x_train, hyperparameters, algorithm = "reg_logistic_regression")
+w, loss = train_model(y_train, x_train, hyperparameters, algorithm = "logistic_regression")
 print("Training complete!")
 
 # EVAL TRAINED MODEL
 y_eval = predict_labels(x_eval, w, classes = [1,-1])
-create_csv_submission(ids_eval, y_eval, 'submission')
+create_csv_submission(idx_eval, y_eval, 'submission')
 
 # TEST TRAINED MODEL
 print("Testing...")
