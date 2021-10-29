@@ -64,22 +64,6 @@ def create_csv_submission(ids, y_pred, name):
         for r1, r2 in zip(ids, y_pred):
             writer.writerow({'Id':int(r1),'Prediction':int(r2)})
 
-# Standard, and destandardazing methods from lab5. To use with visualization
-def standardize(x):
-    """Standardize the original data set."""
-    mean_x = np.mean(x, axis=0)
-    x = x - mean_x
-    std_x = np.std(x, axis=0)
-    x = x / std_x
-    return x, mean_x, std_x
-
-
-def de_standardize(x, mean_x, std_x):
-    """Reverse the procedure of standardization."""
-    x = x * std_x
-    x = x + mean_x
-    return x
-
 # Remove varibles at indexes indicated in remove_idxs
 def remove_variables(x, remove_idxs):
     return np.delete(x, remove_idxs, axis=1)
@@ -100,27 +84,6 @@ def insert_zeros(w, size, insert_idxs):
     # Do this with loop for simplicity
     
     return np.insert(x, insert_idxs, 0, axis=1)
-
-def augment(x, powers):
-    augmented = []
-    for i in range(0,len(powers)):
-        P = powers[i]
-        for p in range(1,P+1):
-            augmented.append(np.power(x[:,i],p))
-    return np.transpose(np.asarray(augmented))
-
-def create_features(x_train,x_test):
-    remove_vars = [2, 4, 7, 8, 9, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
-    augment_vars = [3, 2, 1, 1, 2, 3, 3, 2]
-
-    x_train, mean_x, std_x = standardize(x_train)
-    x_test, mean_x_test, std_x_test = standardize(x_test)
-    x_train = remove_variables(x_train, remove_vars)
-    x_test = remove_variables(x_test, remove_vars)
-    x_train = augment(x_train, augment_vars)
-    x_test = augment(x_test, augment_vars)
-    
-    return x_train, x_test
         
 # Misc functions
 def compute_gradient(y, tx, w):
