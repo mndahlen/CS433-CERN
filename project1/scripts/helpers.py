@@ -66,19 +66,6 @@ def create_csv_submission(ids, y_pred, name):
             writer.writerow({'Id': int(r1), 'Prediction': int(r2)})
 
 
-# Remove varibles at indexes indicated in remove_idxs
-def remove_variables(x, remove_idxs):
-    return np.delete(x, remove_idxs, axis=1)
-
-
-def build_poly_1D(x, degree):
-    """polynomial basis functions for input data x, for j=0 up to j=degree."""
-    poly = np.c_[np.ones(x.shape[0]), x]
-    for d in range(2, degree + 1):
-        poly = np.c_[poly, np.power(x, d)]
-    return poly
-
-
 def split_data(x, y, ratio, seed=1):
     """
     split the dataset based on the split ratio. If ratio is 0.8 

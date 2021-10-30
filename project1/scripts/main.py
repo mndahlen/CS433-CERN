@@ -36,13 +36,9 @@ hyperparameters = {
 # TRAIN
 print("Training...")
 w, loss = train_model(y_train, x_train, hyperparameters, model='logistic_regression', algorithm='GD')
-# w, loss = least_squares_GD(y_train, x_train, hyperparameters['initial_w'], hyperparameters['max_iters'], hyperparameters['gamma'])
-# w, loss = least_squares_SGD(y_train, x_train, hyperparameters['initial_w'], hyperparameters['max_iters'], hyperparameters['gamma'])
-# w, loss = least_squares(y_train, x_train)
-# w, loss = ridge_regression(y_train, x_train, hyperparameters['lambda'])
 print("Training complete!")
 
-# EVAL TRAINED MODEL
+# CREATE SUBMISSION
 y_eval = predict_labels(x_eval, w, classes=[1, -1])
 create_csv_submission(idx_eval, y_eval, 'submission')
 
