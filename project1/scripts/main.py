@@ -26,7 +26,7 @@ print("Features fixed!")
 # HYPERPARAMETERS
 hyperparameters = {
     "gamma": 1e-6,
-    "lambda": 0.6,
+    "lambda": 0,
     "max_iters": 1000,
     "initial_w": np.zeros(x_train.shape[1]),
     "conv_limit": 1e-10
@@ -34,11 +34,7 @@ hyperparameters = {
 
 # TRAIN
 print("Training...")
-w, loss = train_model(y_train, x_train, hyperparameters, model='l2_reg_logistic_regression', algorithm='LSAGDR')
-# w, loss = least_squares_GD(y_train, x_train, hyperparameters['initial_w'], hyperparameters['max_iters'], hyperparameters['gamma'])
-# w, loss = least_squares_SGD(y_train, x_train, hyperparameters['initial_w'], hyperparameters['max_iters'], hyperparameters['gamma'])
-# w, loss = least_squares(y_train, x_train)
-# w, loss = ridge_regression(y_train, x_train, hyperparameters['lambda'])
+w, loss = train_model(y_train, x_train, hyperparameters, model='logistic_regression', algorithm='GD')
 print("Training complete!")
 
 # EVAL TRAINED MODEL
