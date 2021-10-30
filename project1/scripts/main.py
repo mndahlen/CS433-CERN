@@ -2,8 +2,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-from numpy.core.function_base import linspace
-from numpy.core.numeric import NaN
 
 # CUSTOM MODULES
 from helpers import *
@@ -54,8 +52,3 @@ accuracy = cat_accuracy(y_pred, y_train)
 f1_score = F1_score(y_pred, y_train)
 print("Model classified {} % correct".format(accuracy * 100))
 print("Model F1-score = {}".format(f1_score))
-
-
-
-
-

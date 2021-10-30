@@ -7,11 +7,14 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
 
     w = initial_w
     for n_iter in range(max_iters):
+
         if n_iter % 1000 == 0:
             loss = compute_mse(y, tx, w)
             print("iter: {}/{}, loss = {}\n".format(n_iter,  max_iters, loss))
+
         gradient = compute_gradient_LS(y, tx, w)
         w = w - gamma * gradient
+
     loss = compute_mse(y, tx, w)
     print("iter: {}/{}, loss = {}\n".format(max_iters,  max_iters, loss))
     return w, loss
@@ -22,12 +25,15 @@ def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
 
     w = initial_w
     for n_iter in range(max_iters):
+
         if n_iter % 1000 == 0:
             loss = compute_mse(y, tx, w)
             print("iter: {}/{}, loss = {}\n".format(n_iter,  max_iters, loss))
+
         idx = np.random.randint(len(y))
         gradient = compute_stochastic_gradient_LS(y, tx, w, idx)
         w = w - gamma * gradient
+
     loss = compute_mse(y, tx, w)
     print("iter: {}/{}, loss = {}\n".format(max_iters,  max_iters, loss))
     return w, loss
@@ -55,10 +61,13 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, threshold):
     losses = []
     w = initial_w
     for iter_ in range(max_iters):
+
         loss = compute_neg_log_likelihood(y, tx, w)
+
         if (iter_ > 0) and losses[-1] - loss < threshold:
             print("iter: {}/{}, loss = {}\n".format(iter_,  max_iters, loss))
             return w, loss
+
         losses.append(loss)
 
         if iter_ % 1000 == 0:
@@ -66,6 +75,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, threshold):
 
         gradient = compute_gradient_log_reg(y, tx, w)
         w = w - gamma * gradient
+
     loss = compute_neg_log_likelihood(y, tx, w)
     print("iter: {}/{}, loss = {}\n".format(max_iters,  max_iters, loss))
     return w, loss
@@ -77,10 +87,13 @@ def logistic_regression_SGD(y, tx, initial_w, max_iters, gamma, threshold):
     losses = []
     w = initial_w
     for iter_ in range(max_iters):
+
         loss = compute_neg_log_likelihood(y, tx, w)
+
         if (iter_ > 0) and losses[-1] - loss < threshold:
             print("iter: {}/{}, loss = {}\n".format(iter_,  max_iters, loss))
             return w, loss
+
         losses.append(loss)
 
         if iter_ % 1000 == 0:
@@ -89,6 +102,7 @@ def logistic_regression_SGD(y, tx, initial_w, max_iters, gamma, threshold):
         idx = np.random.randint(len(y))
         gradient = compute_stochastic_gradient_log_reg(y, tx, w, idx)
         w = w - gamma * gradient
+
     loss = compute_neg_log_likelihood(y, tx, w)
     print("iter: {}/{}, loss = {}\n".format(max_iters,  max_iters, loss))
     return w, loss
@@ -98,12 +112,16 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma, thresho
     """Gradient descent algorithm for regularized logistic regression."""
 
     losses = []
+
     w = initial_w
     for iter_ in range(max_iters):
+
         loss = compute_neg_log_likelihood_l2(y, tx, w, lambda_)
+
         if (iter_ > 0) and losses[-1] - loss < threshold:
             print("iter: {}/{}, loss = {}\n".format(iter_,  max_iters, loss))
             return w, loss
+
         losses.append(loss)
 
         if iter_ % 1000 == 0:
@@ -111,6 +129,7 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma, thresho
 
         gradient = compute_gradient_log_reg_l2(y, tx, w, lambda_)
         w = w - gamma * gradient
+
     loss = compute_neg_log_likelihood_l2(y, tx, w, lambda_)
     print("iter: {}/{}, loss = {}\n".format(max_iters,  max_iters, loss))
     return w, loss
@@ -122,10 +141,13 @@ def reg_stochastic_logistic_regression(y, tx, lambda_, initial_w, max_iters, gam
     losses = []
     w = initial_w
     for iter_ in range(max_iters):
+
         loss = compute_neg_log_likelihood_l2(y, tx, w, lambda_)
+
         if (iter_ > 0) and losses[-1] - loss < threshold:
             print("iter: {}/{}, loss = {}\n".format(iter_,  max_iters, loss))
             return w, loss
+
         losses.append(loss)
 
         if iter_ % 1000 == 0:
@@ -134,6 +156,7 @@ def reg_stochastic_logistic_regression(y, tx, lambda_, initial_w, max_iters, gam
         idx = np.random.randint(len(y))
         gradient = compute_stochastic_gradient_log_reg_l2(y, tx, w, lambda_, idx)
         w = w - gamma * gradient
+
     loss = compute_neg_log_likelihood_l2(y, tx, w, lambda_)
     print("iter: {}/{}, loss = {}\n".format(max_iters,  max_iters, loss))
     return w, loss
