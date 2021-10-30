@@ -1,4 +1,13 @@
 import numpy as np
+from helpers import *
+
+# LOAD DATA
+DATA_TRAIN_PATH = '../data/train.csv'
+DATA_EVAL_PATH = '../data/test.csv'
+
+# GET TRAIN AND TEST DATA
+y_train, x_train,  idx_train = load_csv_data(DATA_TRAIN_PATH, use_pandas=True, classes=[1, -1])
+_, x_eval, idx_eval = load_csv_data(DATA_EVAL_PATH, use_pandas=True, classes=[1, -1])
 
 
 def create_features(x_train, x_test):
@@ -71,3 +80,73 @@ def de_standardize(x, mean_x, std_x):
     x = x * std_x
     x = x + mean_x
     return x
+
+
+def percentage_missing_data_per_feature(x, threshold):
+    """
+    One way to perform feature selection is to remove columns
+    where there are too much missing values.
+    """
+    n, d = x.shape
+    missing_values_percentages = []
+    for col in range(d):
+        missing_values = np.sum(x[:, col] == -999)
+        missing_values_percentages.append(missing_values)
+    missing_values_percentages = (1 / n) * np.array(missing_values_percentages)
+
+    remove_idx = []
+    for idx, percentage in enumerate(missing_values_percentages):
+        if percentage > threshold:
+            remove_idx.append(idx)
+    print('Consider removing these indices from input_data with more than {}% missing values'.format(threshold * 100))
+    print(remove_idx)
+    return remove_idx
+
+
+def low_variance_feature_in_raw_data(x_raw, threshold):
+    """
+    Another way to remove features to reduce dimensionality is to
+    remove variables which have a low variance (of course before standardizing the data). It means that these
+    values will struggle to explain the data if they don't vary too much.
+    """
+    n = x_raw.shape[0]
+    features_variance = (1 / n) * np.sum(np.square(x_raw - np.mean(x_raw, axis=0)), axis=0)
+    low_variance_idx = []
+    for idx, variance in enumerate(features_variance):
+        if variance < threshold:
+            low_variance_idx.append(idx)
+    print("Features variance in raw data :", features_variance)
+    print('Consider removing these indices from raw input_data with a variance lower than {} threshold'.format(threshold))
+    print(low_variance_idx)
+    return low_variance_idx
+
+
+def feature_selection_pairwise_correlation(x, threshold=0.8, remaining_feature=30):
+    """
+    One other way to perform feature selection is to analyze the correlation matrix.
+    While doing a regression we don't want the features to be too much correlated to each other.
+    Otherwise the information will be redundant and the computation time will increase with no precision gain.
+    """
+    corr_matrix = np.corrcoef(x, rowvar=False)
+    d = corr_matrix.shape[0]
+    redundant_features_idx = []
+    features_cluster = dict()
+    # Correlation matrix is symmetric :
+    for i in range(d):
+        for j in range(i + 1, d):
+            if (np.abs(corr_matrix[i, j]) > threshold) and (i not in redundant_features_idx) and (j not in redundant_features_idx):
+                redundant_features_idx.append(j)
+                if i in features_cluster:
+                    features_cluster[i].append(j)
+                else:
+                    features_cluster[i] = [j]
+    print('The following dict values are the indices of features overlapping which have an absolute correlation coefficient above {} threshold.'.format(threshold))
+    print('Consider removing these features, and keep their representative features whose indices are in dict keys.')
+    print(features_cluster)
+    return features_cluster
+
+
+if __name__ == '__main__':
+    percentage_missing_data_per_feature(x_train, threshold=0.4)
+    low_variance_feature_in_raw_data(x_train, threshold=1.0)
+    feature_selection_pairwise_correlation(x_train, threshold=0.8)
