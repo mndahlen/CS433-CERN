@@ -62,6 +62,7 @@ def handle_outliers(data):
 
     return data
 
+
 def standardize(x):
     """Standardize the original data set."""
     mean_x = np.mean(x, axis=0)

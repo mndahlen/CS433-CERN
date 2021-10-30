@@ -26,7 +26,7 @@ print("Features fixed!")
 # HYPERPARAMETERS
 hyperparameters = {
     "gamma": 1e-6,
-    "lambda": 0,
+    "lambda": 0.6,
     "max_iters": 1000,
     "initial_w": np.zeros(x_train.shape[1]),
     "conv_limit": 1e-10
@@ -37,14 +37,14 @@ print("Training...")
 w, loss = train_model(y_train, x_train, hyperparameters, model='logistic_regression', algorithm='GD')
 print("Training complete!")
 
-# EVAL TRAINED MODEL
+# CREATE SUBMISSION
 y_eval = predict_labels(x_eval, w, classes=[1, -1])
 create_csv_submission(idx_eval, y_eval, 'submission')
 
 # TEST TRAINED MODEL
 print("Testing...")
 y_pred = predict_labels(x_test, w, classes=[1, -1])
-accuracy = cat_accuracy(y_pred, y_train)
+accuracy = cat_accuracy(y_pred, y_test)
 f1_score = F1_score(y_pred, y_train)
 print("Model classified {} % correct".format(accuracy * 100))
 print("Model F1-score = {}".format(f1_score))
