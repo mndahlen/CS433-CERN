@@ -17,6 +17,7 @@ DATA_EVAL_PATH = '../data/test.csv'
 y_train, x_train,  idx_train = load_csv_data(DATA_TRAIN_PATH, use_pandas=True, classes=[1, -1])
 _, x_eval, idx_eval = load_csv_data(DATA_EVAL_PATH, use_pandas=True, classes=[1, -1])
 
+
 # CREATE FEATURES FOR TRAIN, TEST AND EVAL DATA
 print("Fixing features...")
 x_train, x_eval = create_features(x_train, x_eval)
@@ -34,7 +35,7 @@ hyperparameters = {
 
 # TRAIN
 print("Training...")
-w, loss = train_model(y_train, x_train, hyperparameters, model='l2_reg_logistic_regression', algorithm='LSAGDR')
+w, loss = train_model(y_train, x_train, hyperparameters, model='logistic_regression', algorithm='GD')
 # w, loss = least_squares_GD(y_train, x_train, hyperparameters['initial_w'], hyperparameters['max_iters'], hyperparameters['gamma'])
 # w, loss = least_squares_SGD(y_train, x_train, hyperparameters['initial_w'], hyperparameters['max_iters'], hyperparameters['gamma'])
 # w, loss = least_squares(y_train, x_train)
@@ -48,7 +49,7 @@ create_csv_submission(idx_eval, y_eval, 'submission')
 # TEST TRAINED MODEL
 print("Testing...")
 y_pred = predict_labels(x_test, w, classes=[1, -1])
-accuracy = cat_accuracy(y_pred, y_train)
-f1_score = F1_score(y_pred, y_train)
+accuracy = cat_accuracy(y_pred, y_test)
+f1_score = F1_score(y_pred, y_test)
 print("Model classified {} % correct".format(accuracy * 100))
 print("Model F1-score = {}".format(f1_score))
