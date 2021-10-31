@@ -6,8 +6,8 @@ DATA_TRAIN_PATH = '../data/train.csv'
 DATA_EVAL_PATH = '../data/test.csv'
 
 # GET TRAIN AND TEST DATA
-y_train, x_train,  idx_train = load_csv_data(DATA_TRAIN_PATH, use_pandas=True, classes=[1, -1])
-_, x_eval, idx_eval = load_csv_data(DATA_EVAL_PATH, use_pandas=True, classes=[1, -1])
+# y_train, x_train,  idx_train = load_csv_data(DATA_TRAIN_PATH, use_pandas=True, classes=[1, -1])
+# _, x_eval, idx_eval = load_csv_data(DATA_EVAL_PATH, use_pandas=True, classes=[1, -1])
 
 
 def create_features(x_train, x_test, poly_features = []):

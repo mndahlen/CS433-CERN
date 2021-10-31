@@ -17,6 +17,7 @@ DATA_EVAL_PATH = '../data/test.csv'
 y_train, x_train,  idx_train = load_csv_data(DATA_TRAIN_PATH, use_pandas=True, classes=[1, -1])
 _, x_eval, idx_eval = load_csv_data(DATA_EVAL_PATH, use_pandas=True, classes=[1, -1])
 
+
 # CREATE FEATURES FOR TRAIN, TEST AND EVAL DATA
 print("Fixing features...")
 poly_features = [[0],[0,1],[0,2],[0,7],[0,16],[1],[1,10],[0,0],[2,7],[2,2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[16],[16,16]]
@@ -46,6 +47,6 @@ create_csv_submission(idx_eval, y_eval, 'submission')
 print("Testing...")
 y_pred = predict_labels(x_test, w, classes=[1, -1])
 accuracy = cat_accuracy(y_pred, y_test)
-f1_score = F1_score(y_pred, y_train)
+f1_score = F1_score(y_pred, y_test)
 print("Model classified {} % correct".format(accuracy * 100))
 print("Model F1-score = {}".format(f1_score))
