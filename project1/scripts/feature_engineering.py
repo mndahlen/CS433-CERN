@@ -10,7 +10,7 @@ y_train, x_train,  idx_train = load_csv_data(DATA_TRAIN_PATH, use_pandas=True, c
 _, x_eval, idx_eval = load_csv_data(DATA_EVAL_PATH, use_pandas=True, classes=[1, -1])
 
 
-def create_features(x_train, x_test):
+def create_features(x_train, x_test, poly_features = []):
     '''
         Creates features with three steps:
         1. Sets all outliers to mean of non-outlier data.
@@ -23,7 +23,6 @@ def create_features(x_train, x_test):
     x_train, mean_x, std_x = standardize(x_train)
     x_test, mean_x_test, std_x_test = standardize(x_test)
 
-    poly_features = [[0],[0,1],[0,2],[0,7],[0,16],[1],[1,10],[0,0],[2,7],[2,2],[3],[4],[5],[6],[7],[8],[9],[10],[11],[12],[13],[14],[16],[16,16]]
     x_train = create_poly(x_train, poly_features)
     x_test = create_poly(x_test, poly_features)
 
@@ -39,6 +38,7 @@ def create_poly(x, poly_features):
     rows = x.shape[0]
 
     features = []
+    features.append(np.ones([rows, 1]).flatten()) # Bias term
     for feature in poly_features:
         cur = np.ones([rows, 1])
         for col in feature:
