@@ -34,15 +34,16 @@ def create_poly(x, poly_features):
         Creates features specified in poly_features.
         Each sub-list is one feature. The indexes in each subarray specifies what
         features (indexes) of x to combine multiplicatively.
+        Observe that negative (<0) indexes signify bias weight term.
     '''
     rows = x.shape[0]
 
     features = []
-    features.append(np.ones([rows, 1]).flatten()) # Bias term
     for feature in poly_features:
         cur = np.ones([rows, 1])
         for col in feature:
-            cur = np.multiply(cur, (x[:, col]).reshape(rows, 1))
+            if col > -1: 
+                cur = np.multiply(cur, (x[:, col]).reshape(rows, 1))
         features.append(cur.flatten())
 
     return np.transpose(np.asarray(features))

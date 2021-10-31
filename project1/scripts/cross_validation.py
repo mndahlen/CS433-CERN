@@ -36,8 +36,8 @@ feature_sets_for_validation = [[[0]],[[1]],[[2]],[[3]],[[4]],[[5]],[[6]],
 hyperparameters = {
     "gamma": 1e-7,
     "lambda": 0.6,
-    "max_iters": 200,
-    "initial_w": np.zeros(2),
+    "max_iters": 100,
+    "initial_w": np.zeros(len(feature_sets_for_validation[0])),
     "conv_limit": 1e-10
 }
 
