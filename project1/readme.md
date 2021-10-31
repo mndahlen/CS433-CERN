@@ -30,7 +30,7 @@ Furthermore there are some functions for testing feasibility of features:
 Various helpers for loading and saving CSV data, predicting labels, calculating accuracy and score, splitting data etc. 
 
 ### train_py
-Functions for creating lambda function for training models. Used in *run.py*
+Includes funciton *build_model()* for creating lambda function for training models and primary function *train_model()* for running the created model. Used in *run.py*
 
 ### cross_validation_py
 This module for cross validation is only used for feature selection and not model evaluation. Performs cross validation on selected features. Note that all sets of feature must contain the same number of features. 
